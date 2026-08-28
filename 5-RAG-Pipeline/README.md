@@ -15,12 +15,23 @@ Notebook-first lab for building a retrieval-augmented generation pipeline on Azu
 
 ## Goals
 
-Store chunks and embeddings in Azure DocumentDB, create vector and BM25 indexes, retrieve context with vector and hybrid search, and build a grounded prompt for a chat model.
+Create embeddings with OpenAI, store chunks and embeddings in Azure DocumentDB, create vector and BM25 indexes, retrieve context with vector and hybrid search, and build a grounded prompt for a chat model.
 
 ## Prerequisites
 
 - Azure DocumentDB cluster from Module 1.
 - M30 or higher for DiskANN vector search.
 - Full-text search enabled on the cluster; it is currently in gated preview.
-- `DOCUMENTDB_CONNECTION_STRING` set in your notebook environment, or paste the connection string into Step 0.
-- Python: `pymongo`. C#: .NET Interactive; the notebook restores `MongoDB.Driver`. Node.js: `mongodb` package, installed by the notebook if missing.
+- Azure DocumentDB connection string.
+- OpenAI API key for embeddings.
+- Python: `pymongo` and `openai`, installed by the notebook if missing.
+- C#: .NET Interactive; the notebook restores `MongoDB.Driver`.
+- Node.js: `mongodb` package, installed by the notebook if missing.
+
+## How Participants Run It
+
+1. Open the `before` notebook for Python, C#, or Node.js.
+2. Paste the Azure DocumentDB connection string in Step 0, or set `DOCUMENTDB_CONNECTION_STRING`.
+3. Paste the OpenAI API key in Step 0, or set `OPENAI_API_KEY`.
+4. Run every cell in order.
+5. Compare with the matching `after` notebook.
