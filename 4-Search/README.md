@@ -10,6 +10,8 @@ Notebook-first lab for Sales teams and customers. Use the `before` notebook in y
 | `after/python/4_Search_DocumentDB.ipynb` | Python completed reference. |
 | `before/csharp/4_Search_DocumentDB.ipynb` | C# starter notebook for .NET Interactive. |
 | `after/csharp/4_Search_DocumentDB.ipynb` | C# completed reference. |
+| `before/nodejs/4_Search_DocumentDB.ipynb` | Node.js starter notebook. |
+| `after/nodejs/4_Search_DocumentDB.ipynb` | Node.js completed reference. |
 | `sample-data/documentdb_search_docs.json` | Shared small sample data. |
 
 ## Goals
@@ -22,4 +24,4 @@ Create and run Azure DocumentDB vector search, BM25 full-text search, fuzzy sear
 - M30 or higher for DiskANN vector search.
 - Full-text search enabled on the cluster; it is currently in gated preview.
 - `DOCUMENTDB_CONNECTION_STRING` set in your notebook environment.
-- Python: `pymongo`. C#: .NET Interactive; the notebook restores `MongoDB.Driver`.
+- Python: `pymongo`. C#: .NET Interactive; the notebook restores `MongoDB.Driver`. Node.js: `mongodb` package available to the notebook kernel.
