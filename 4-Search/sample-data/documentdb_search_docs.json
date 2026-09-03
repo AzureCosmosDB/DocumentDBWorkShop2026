@@ -1,0 +1,7 @@
+[
+  {"_id":"doc-search-001","title":"DiskANN vector indexing","category":"vector","body":"Azure DocumentDB supports DiskANN vector indexes for high recall semantic similarity search over embeddings stored with documents.","sku":"SEARCH-VEC-001"},
+  {"_id":"doc-search-002","title":"BM25 keyword search","category":"full-text","body":"Azure DocumentDB full-text search ranks keyword matches with BM25 and exposes scores through searchScore metadata.","sku":"SEARCH-FTS-001"},
+  {"_id":"doc-search-003","title":"Hybrid search with RRF","category":"hybrid","body":"Hybrid search combines BM25 keyword results with vector results and fuses the ranked lists using Reciprocal Rank Fusion.","sku":"SEARCH-HYB-001"},
+  {"_id":"doc-search-004","title":"RAG grounding","category":"rag","body":"Retrieval augmented generation retrieves relevant chunks from Azure DocumentDB and grounds the model answer in that context.","sku":"RAG-PIPE-001"},
+  {"_id":"doc-search-005","title":"Operational filtering","category":"filters","body":"Search applications often filter by status, tenant, region, stock, or category after the search stage narrows candidate documents.","sku":"SEARCH-FLT-001"}
+]

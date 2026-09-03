@@ -1,151 +1,118 @@
-# Create or Verify the Target Cluster
+---
+title: Access the Workshop Environment
+description: Sign in to Azure and configure the workshop VM for predeployed Azure DocumentDB resources
+---
 
-[Back to Module 1: DocumentDB Introduction and Cluster Setup](README.md)
+The workshop environment is deployed before the lab begins. You do not need to
+create an Azure DocumentDB cluster, configure networking, copy connection
+strings, or manage access keys.
 
-If the instructor has already provisioned a cluster, verify it with this guide before continuing to the next module.
+## Resources provided for the workshop
 
-If you need to create one, follow this sequence.
+Your assigned Azure subscription contains the resources used by the labs:
 
-## Participant Cluster Setup Rules
+* An Azure DocumentDB cluster
+* An Azure OpenAI or Azure AI Services account
+* A `text-embedding-3-small` deployment
+* Role assignments for Microsoft Entra ID authentication
+* Network access configured for the workshop environment
 
-You will create your own cluster for this lab.
+The search labs expect a cluster tier that supports DiskANN vector indexes.
+Full-text search is a gated preview and may not be enabled on every workshop
+cluster. The console samples continue with vector-only retrieval when the
+server returns `CommandNotSupported` for full-text index creation.
 
-Before starting, follow these workshop rules:
+## Sign in and configure your environment
 
-1. Use the naming pattern shared by your instructor, for example `docdb-lab-<name>-<nn>`.
-2. Use the workshop-approved region and tier.
-3. Save your cluster admin username and password in a secure place.
-4. Keep your connection string private.
+Open PowerShell at the workspace root and sign in with the account assigned to
+the workshop:
 
-Self-check milestones:
+```powershell
+az login
+```
 
-- Milestone 1: Resource group is ready and cluster creation has started.
-- Milestone 2: Cluster status is running and your client IP is added.
-- Milestone 3: Connection string is copied and `mongosh` ping returns `{ "ok": 1 }`.
+If your account has access to multiple subscriptions, confirm the active one:
 
-If you are blocked for more than a few minutes at any milestone, ask your instructor for help immediately so you can stay in sync with the class.
+```powershell
+az account show --output table
+```
 
-## 1. Open Azure Portal and Create/Select Resource Group
+Select the workshop subscription when necessary:
 
-1. Go to `https://portal.azure.com` and sign in.
-2. Open **Resource groups**.
-3. Create or select a workshop resource group.
+```powershell
+az account set --subscription "<workshop-subscription-name-or-id>"
+```
 
-## 2. Create the Azure DocumentDB Cluster
+Run the shared environment script:
 
-1. In the top search bar, search for **Azure DocumentDB**.
+```powershell
+./1-DocumentDB-Introduction-and-Cluster-Setup/Set-LabEnvironment.ps1
+```
 
-You should see Azure DocumentDB in the search results:
+When more than one matching resource is available, the script displays a
+numbered list. Select the Azure DocumentDB cluster, Azure OpenAI account, and
+embedding deployment assigned to you.
 
-![Azure Portal search results showing Azure DocumentDB](assets/azure-documentdb-search.png)
+## Expected script output
 
-2. Select **Azure DocumentDB**, then click **Create**.
-3. In the **Basics** tab, fill in:
-
-| Setting | Workshop Recommendation |
-|---|---|
-| Subscription | Your workshop subscription |
-| Resource group | Existing workshop resource group |
-| Cluster name | Globally unique name (for example `docdb-lab-<name>`) |
-| Region | Same region as the workshop resources |
-| MongoDB version | Latest stable available |
-| High availability | Disable for workshop cost control |
-| Cluster tier | M30 or higher (required for DiskANN vector search) |
-| Storage | Default is fine for lab workloads |
-
-4. Set the admin username and password, then store them securely.
-5. Click **Review + Create**.
-6. Wait for validation to pass.
-7. Click **Create**.
-
-Deployment can take 10-15 minutes.
-
-## 3. Configure Networking
-
-After deployment completes:
-
-1. Open the cluster resource.
-2. Go to **Networking** under **Settings**.
-3. Choose the option for public access from selected IP addresses.
-4. Click **Add current client IP address**.
-5. Save the networking changes.
-
-Avoid broad ranges such as `0.0.0.0 - 255.255.255.255` unless the instructor explicitly allows temporary use for troubleshooting.
-
-## 4. Copy the Connection String
-
-1. Open **Connection strings**.
-2. Copy the SRV connection string.
-3. Confirm the query portion includes TLS and auth mechanism.
-
-Expected pattern:
+The script reports the active subscription and prints three values similar to
+the following example:
 
 ```text
-mongodb+srv://<username>:<password>@<cluster>.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000
+Using Azure subscription: Workshop Subscription
+DOCUMENTDB_CLUSTER_NAME=docdb-workshop-01
+AZURE_OPENAI_ENDPOINT=https://workshop-openai.openai.azure.com
+AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-3-small
+Variables were persisted for future processes. Restart the notebook kernel or terminal before running a lab.
 ```
 
-If your copied string does not include `authMechanism=SCRAM-SHA-256`, add it.
+The actual resource names and endpoint depend on your assigned environment.
+The script stores these values as user environment variables, so no secrets or
+connection strings are written to the repository.
 
-## 5. Run the First Health Checks
+| Environment variable | Used for |
+|---|---|
+| `DOCUMENTDB_CLUSTER_NAME` | Building the Azure DocumentDB SRV endpoint |
+| `AZURE_OPENAI_ENDPOINT` | Sending requests to the assigned Azure OpenAI resource |
+| `AZURE_OPENAI_EMBEDDING_DEPLOYMENT` | Selecting the embedding deployment |
 
-Run these checks in Command Prompt before moving to migration:
+Restart the VS Code terminal and any notebook kernel after the script
+completes. New processes then receive the persisted values.
 
-```bash
-mongosh "<target-connection-string>"
-```
+## Expected authentication behavior
 
-If you see `'mongosh' is not recognized as an internal or external command` on Windows:
+The Python, Node.js, and C# samples use `AzureCliCredential`. When a sample
+starts successfully, expect it to:
 
-1. Open PowerShell as Administrator.
-2. Install MongoDB Shell:
+1. Reuse the identity from your active Azure CLI session.
+2. Request a Microsoft Entra token for Azure DocumentDB.
+3. Request a separate Microsoft Entra token for Azure OpenAI.
+4. Connect without a database password or API key.
+
+The first database check returns a successful `ping`, and the sample reports
+that it connected with Microsoft Entra ID.
+
+## Troubleshooting expected access
+
+If `az login` fails, complete the browser sign-in flow and verify that you used
+the workshop account. For environments where the browser cannot open, use:
 
 ```powershell
-winget install MongoDB.Shell
+az login --use-device-code
 ```
 
-3. Close and reopen the terminal.
-4. Verify installation:
+If the setup script cannot find the expected resources:
+
+1. Run `az account show` and confirm the workshop subscription is active.
+2. Confirm that your workshop role assignments have been applied.
+3. Ask the instructor for the assigned resource group or resource names.
+4. Run the script again with the provided resource group when needed:
 
 ```powershell
-mongosh --version
+./1-DocumentDB-Introduction-and-Cluster-Setup/Set-LabEnvironment.ps1 `
+    -ResourceGroupName "<workshop-resource-group>"
 ```
 
-If `winget` is unavailable in your environment, ask your instructor for the installer package or a preconfigured lab machine.
-
-Inside `mongosh`:
-
-```javascript
-db.runCommand({ ping: 1 })
-```
-
-Expected result for ping:
-
-```json
-{ "ok": 1 }
-```
-
-## 6. Common Cluster Setup Pitfalls
-
-- Cluster still provisioning when attendees try to connect.
-- Current client IP not added in networking.
-- Password copied with hidden trailing spaces.
-- Wrong cluster tier selected for vector lab (below M30).
-- Connection string pasted without required auth mechanism.
-
-## 7. If You Get Stuck
-
-Check these items in order:
-
-1. Cluster deployment has completed.
-2. Your current public IP is added in networking.
-3. Connection string includes your cluster host and correct username.
-4. `authMechanism=SCRAM-SHA-256` is present in the connection string.
-5. Cluster tier matches workshop requirements (M30+ for vector lab).
-
-If it still fails, share the exact error text with your instructor.
-
-## Quick Verification
-
-```bash
-mongosh "<target-connection-string>"
-```
+An error stating that search index creation is not supported means full-text
+search is not enabled for that cluster. It does not indicate a failed Azure
+login or DocumentDB connection.

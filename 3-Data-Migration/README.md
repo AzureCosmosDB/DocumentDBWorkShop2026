@@ -1,8 +1,27 @@
-# Module 3: Data Migration
+---
+title: Data Migration
+description: Assess, migrate, and validate MongoDB data in a shared lab for Python, C#, and Node.js application teams
+---
 
 **Duration:** 2 hours
 
-In this lab, you will connect to the target cluster created or verified in Module 1 and migrate data from a MongoDB cluster to Azure DocumentDB.
+Assess a provided MongoDB source, migrate its data to the predeployed Azure
+DocumentDB target, and validate the result.
+
+## Lab format
+
+1. Connect to the provided source and target environments.
+2. Run and review a pre-migration assessment.
+3. Perform or observe an offline migration.
+4. Compare source and target data.
+5. Review online migration and cutover behavior.
+
+## Python, C#, and Node.js participants
+
+Migration is performed by the VS Code migration extension or MongoDB database
+tools, not by application code. Python, C#, and Node.js participants therefore
+follow the same migration steps. Validation protects the collection names,
+document shapes, and indexes consumed by all three application languages.
 
 ## Learning Goals
 
@@ -13,34 +32,35 @@ In this lab, you will connect to the target cluster created or verified in Modul
 
 ## Prerequisites
 
-- An Azure DocumentDB target cluster and connection string from the [Module 1 cluster setup guide](../1-DocumentDB-Introduction-and-Cluster-Setup/cluster-setup.md).
-- Access to the MongoDB source connection string from the instructor.
-- DocumentDB for VS Code extension installed.
-- Azure DocumentDB Migration extension installed.
+* Complete the [Module 1 environment-access lab](../1-DocumentDB-Introduction-and-Cluster-Setup/cluster-setup.md)
+* Obtain the MongoDB source connection details from the instructor
+* Use the DocumentDB and Azure DocumentDB Migration extensions provided on the
+  workshop VM
 
-## Part A: Connect to the MongoDB Source in VS Code
+## Lab step 1: Connect to the source and target
 
-1. Open VS Code.
+1. Open the preconfigured VS Code workspace on the workshop VM.
 2. Open **Extensions**.
-3. Search and install these two extensions:
-   - **DocumentDB for VS Code**
-   - **Azure DocumentDB Migration**
+3. Confirm that **DocumentDB for VS Code** and **Azure DocumentDB Migration**
+  are installed and enabled. If either extension is missing, report the VM
+  name to the instructor.
 
 ![VS Code Marketplace showing required DocumentDB extensions](assets/documentdb-extensions-search.png)
 
 4. Open the DocumentDB extension view.
 5. Add a MongoDB connection using the source connection string provided by the instructor.
 6. Confirm that the source cluster appears in the connections pane.
-7. Add another connection using your target connection string from the [Module 1 cluster setup guide](../1-DocumentDB-Introduction-and-Cluster-Setup/cluster-setup.md).
-8. Confirm that both source MongoDB and destination Azure DocumentDB connections appear in the pane.
+7. Select the predeployed Azure DocumentDB target when the migration workflow asks for the destination.
+8. Confirm that both source MongoDB and destination Azure DocumentDB appear in the migration workflow.
 
-## Part B: Run Pre-Migration Assessment
+## Lab step 2: Run the pre-migration assessment
 
 This is the most important step before any migration.
 
 1. Right-click the MongoDB source connection.
 2. Select the data migration option.
-3. If prompted, install the Azure DocumentDB Migration extension.
+3. If VS Code reports that the Azure DocumentDB Migration extension is missing,
+  stop and report the VM name to the instructor.
 4. If you see a card named **Migration to Azure DocumentDB**, click it.
 5. Then choose **Pre-Migration Assessment for Azure DocumentDB**.
 6. Validate the source connection.
@@ -59,7 +79,7 @@ This is the most important step before any migration.
 
 Before proceeding, "What would block a clean migration if this were production?"
 
-## Part C: Perform an Offline Migration
+## Lab step 3: Perform an offline migration
 
 Choose one of the following options.
 
@@ -78,15 +98,12 @@ Choose one of the following options.
 
 ### Option 2: CLI Export/Import (`mongoexport` + `mongoimport`)
 
-Use this if the migration wizard is unavailable.
+Use this only when the migration wizard is unavailable and the instructor
+provides source and target connection strings for the migration exercise. The
+application samples continue to use Microsoft Entra ID.
 
-Install prerequisite (Windows) if `mongoimport` is missing:
-
-```powershell
-winget install MongoDB.DatabaseTools
-```
-
-After install, close and reopen terminal and verify:
+MongoDB Database Tools are provided on the workshop VM. Verify that
+`mongoimport` is available:
 
 ```powershell
 mongoimport --version
@@ -110,7 +127,9 @@ mongoimport --uri "<target-connection-string>" --db "<database_name>" --collecti
 
 ### Option 3: `mongosh` Import from JSON
 
-Use this if `mongoimport` is not available and JSON files are already provided.
+Use this only for the included sample JSON when `mongoimport` is unavailable
+and the instructor provides a temporary target connection string. Use Option 1
+or Option 2 when migrating another source.
 
 ```bash
 mongosh "<target-connection-string>"
@@ -119,7 +138,7 @@ mongosh "<target-connection-string>"
 Then run:
 
 ```javascript
-use cosmicworks
+use docdbworkshop
 
 const data = JSON.parse(fs.readFileSync("sample-data/movies_with_vectors.json", "utf8"))
 
@@ -128,7 +147,7 @@ db.movies.insertMany(data)
 
 > Option 2 and Option 3 are offline copy/import methods. They do not provide online replication state tracking or cutover orchestration.
 
-## Part D: Monitor and Validate
+## Lab step 4: Monitor and validate
 
 Track the job until it reaches `Succeeded`.
 
@@ -148,7 +167,7 @@ Validate:
 - Document counts are aligned.
 - Sample application queries still work.
 
-## Part E: Online Migration and Cutover
+## Lab step 5: Review online migration and cutover
 
 Depending on workshop time and environment readiness, this may be run as either a participant activity or an instructor demo.
 
@@ -170,14 +189,16 @@ Key points to show:
 - 20 min: validation
 - 10 min: online migration concept and cutover demo
 
-## Success Check
+## Lab success check
 
-- [ ] You connected to the source MongoDB environment.
-- [ ] You ran a pre-migration assessment.
-- [ ] You reviewed the assessment findings.
-- [ ] You created or observed an offline migration.
-- [ ] You validated document counts in the target.
-- [ ] You understand when online migration is needed.
+* [ ] You connected to the provided MongoDB source
+* [ ] You selected the predeployed Azure DocumentDB target
+* [ ] You ran and reviewed a pre-migration assessment
+* [ ] You resolved or documented blocking compatibility findings
+* [ ] You created or observed an offline migration
+* [ ] You compared source and target collection counts
+* [ ] You ran at least one representative query against migrated data
+* [ ] You can explain when online migration and cutover are required
 
 ## Troubleshooting
 
@@ -185,25 +206,15 @@ Use this quick list when commands fail during the workshop.
 
 ### 1) `mongosh` command not found
 
-Install and verify:
-
-```powershell
-winget install MongoDB.Shell
-mongosh --version
-```
-
-If this works in external CMD but not in VS Code terminal, fully close and reopen VS Code, then open a new terminal.
+Open a new VS Code terminal and run `mongosh --version`. If the command remains
+unavailable, report the VM name to the instructor. Do not install software on
+the workshop VM.
 
 ### 2) `mongoimport` command not found
 
-Install MongoDB Database Tools:
-
-```powershell
-winget install MongoDB.DatabaseTools
-mongoimport --version
-```
-
-If still not found, this is usually PATH refresh. Close and reopen terminal.
+Open a new VS Code terminal and run `mongoimport --version`. If the command
+remains unavailable, report the VM name to the instructor. MongoDB Database
+Tools are part of the preconfigured VM.
 
 As a direct fallback, run by full path (adjust version folder if needed):
 
@@ -218,9 +229,10 @@ As a direct fallback, run by full path (adjust version folder if needed):
 - Run `mongoimport` in CMD or PowerShell.
 - Run `db.*` commands inside `mongosh`.
 
-### 4) Connection string issues in terminal
+### 4) Instructor-provided connection string issues
 
-Always wrap the full connection string in double quotes:
+Options 2 and 3 require connection strings supplied by the instructor. Always
+wrap the full value in double quotes:
 
 ```bash
 mongosh "<target-connection-string>"
@@ -242,7 +254,7 @@ mongosh "<target-connection-string>"
 
 Check in this order:
 
-1. Cluster deployment is complete and status is running.
-2. Current public IP is added under networking and saved.
-3. Username/password are correct.
-4. Connection string includes `tls=true` and `authMechanism=SCRAM-SHA-256`.
+1. Confirm that the predeployed cluster status is running.
+2. Confirm that the workshop subscription is active in Azure CLI.
+3. Confirm that your workshop role assignments are available.
+4. For Options 2 and 3 only, verify the instructor-provided connection string.

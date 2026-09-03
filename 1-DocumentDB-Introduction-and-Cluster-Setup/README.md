@@ -1,129 +1,63 @@
-# Module 1: DocumentDB Introduction and Cluster Setup
+---
+title: DocumentDB Introduction and Environment Access
+description: Review Azure DocumentDB concepts and connect to the predeployed workshop environment
+---
 
-This module introduces Azure DocumentDB and prepares the target cluster used throughout the workshop.
+This module introduces Azure DocumentDB and connects the tools on your provided
+workshop VM to the predeployed resources used throughout the workshop.
 
-## Module Materials
+## Module materials
 
-1. Review the [Azure DocumentDB Introduction](DocumentDB_Intro.pdf).
+1. Review the [Azure DocumentDB introduction](DocumentDB_Intro.pdf).
 2. Confirm the prerequisites below.
-3. Complete [Create or Verify the Target Cluster](cluster-setup.md).
+3. Complete [Access the workshop environment](cluster-setup.md).
 
-## What Participants Need
+## What participants need
 
-- An Azure subscription with permission to create resources, or access to a pre-provisioned lab environment.
-- [Visual Studio Code](https://code.visualstudio.com/download).
-- [DocumentDB for VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-documentdb).
-- [Azure DocumentDB Migration extension](https://marketplace.visualstudio.com/items?itemName=ms-azurecosmosdbtools.vscode-mongo-migration).
-- `mongosh` installed and available in a terminal.
-- Optional: `mongoimport` if attendees will load sample data themselves.
-- Optional for the MCP demo: Node.js 18+ and GitHub Copilot Chat access.
+* A computer with internet access and a supported web browser
+* The workshop VM access details provided by the instructor
+* The Microsoft Entra user principal and password provided by the instructor
 
-## Before the Session
+The workshop VM provides Visual Studio Code, Azure CLI, the required extensions,
+and all language runtimes. The assigned Azure resource group provides the Azure
+DocumentDB cluster, Azure OpenAI resource, embedding deployment, network
+configuration, and Microsoft Entra role assignments. The supplied user
+principal has the administrator access required for the labs. Participants do
+not install software or create Azure resources.
 
-Ask participants to verify the following:
+## Before the session
 
-- They can sign in to the Azure portal.
-- They can open VS Code.
-- They can run `mongosh --version`.
-- They know where to find the workshop files in this workspace.
-
-If `mongosh` is missing on Windows, install it before the workshop:
+Connect to the workshop VM through your browser. Confirm that you can open the
+preconfigured VS Code workspace and run:
 
 ```powershell
-winget install MongoDB.Shell
+az --version
 ```
 
-Then close and reopen the terminal and run:
+You will use `az login` during environment access. No database password, Azure
+OpenAI API key, or DocumentDB connection string is required by the workshop
+samples.
 
-```powershell
-mongosh --version
-```
+## Environment access
 
-If participants will create their own clusters, also ask them to verify:
+Follow [Access the workshop environment](cluster-setup.md) before starting the
+remaining modules. The guide describes the resources you should expect, runs
+the shared `Set-LabEnvironment.ps1` script, and shows the expected output.
 
-- They have enough Azure quota in the selected region for the chosen workshop tier.
-- They can create resources in the target subscription and resource group.
-- They understand expected workshop cost and cleanup instructions.
+## Common terms
 
-## Target Cluster Setup
+* Database: a logical container for collections
+* Collection: a group of documents, similar to a table in a relational system
+* Document: a JSON-like record stored as BSON
+* Index: a data structure that helps queries avoid scanning every document
+* Aggregation pipeline: a sequence of stages used to transform or summarize data
 
-Before continuing, complete the [Create or Verify the Target Cluster](cluster-setup.md) guide. It covers cluster creation, networking, connection strings, and health checks.
+## Success check
 
-## Common Terms
+Before continuing to Module 2, confirm:
 
-- Database: a logical container for collections.
-- Collection: a group of documents, similar to a table in a relational system.
-- Document: a JSON-like record stored as BSON.
-- Index: a data structure that helps queries avoid scanning every document.
-- Aggregation pipeline: a sequence of stages used to transform or summarize data.
-
-## MongoDB Shell Primer
-
-If this is your first time using MongoDB, practice these commands before the lab.
-
-### Connect to a Cluster
-
-```bash
-mongosh "<your-connection-string>"
-```
-
-### Basic Navigation
-
-```javascript
-show dbs
-use cosmicworks
-show collections
-```
-
-### Insert a Document
-
-```javascript
-db.practice.insertOne({
-  name: "Ada",
-  role: "engineer",
-  level: 200,
-  active: true
-})
-```
-
-### Read Documents
-
-```javascript
-db.practice.find()
-
-db.practice.find(
-  { level: { $gte: 100 } },
-  { _id: 0, name: 1, role: 1 }
-)
-```
-
-### Update a Document
-
-```javascript
-db.practice.updateOne(
-  { name: "Ada" },
-  { $set: { level: 300 } }
-)
-```
-
-### First Aggregation Example
-
-```javascript
-db.practice.aggregate([
-  { $group: { _id: "$role", count: { $sum: 1 } } }
-])
-```
-
-### Delete a Document
-
-```javascript
-db.practice.deleteOne({ name: "Ada" })
-```
-
-## Success Check
-
-Before the live session, confirm:
-
-- [ ] You can open VS Code and the Azure portal.
-- [ ] `mongosh` works in a terminal.
-- [ ] You understand how to run `use`, `find`, `insertOne`, `updateOne`, and `aggregate`.
+* You are signed in through Azure CLI with the workshop account
+* The correct workshop subscription is active
+* The shared environment script completes successfully
+* The three workshop environment variables are displayed
+* You restarted the VS Code terminal and notebook kernel after setup
