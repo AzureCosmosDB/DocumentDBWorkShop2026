@@ -7,7 +7,7 @@ This module covers how to design document schemas for Azure DocumentDB and how t
 ## Module Materials
 
 1. Work through the concepts and examples in the sections below.
-2. Complete the [Hands-On Lab](lab.md) at each exercise checkpoint.
+2. Complete the [Hands-On Lab](Shell-based-lab.md) at each exercise checkpoint.
 3. Review the success check at the end before the next module.
 
 ## What Participants Need
@@ -1185,7 +1185,7 @@ Before the next module, confirm:
 - [ ] You understand the efficiency ratio: `nReturned / totalDocsExamined`.
 - [ ] You can apply the ESR rule to design a compound index.
 - [ ] You know how to hide an index and why it is preferable to dropping it for testing.
-- [ ] You completed the [Hands-On Lab](lab.md).
+- [ ] You completed the [Hands-On Lab](Shell-based-lab.md).
 
 ## Additional Resources
 
