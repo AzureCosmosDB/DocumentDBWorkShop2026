@@ -17,7 +17,7 @@
 .PARAMETER AzureOpenAIAccountName
 	Selects a specific Azure OpenAI account.
 .PARAMETER EmbeddingDeploymentName
-	Selects an embedding deployment. Defaults to text-embedding-3-small.
+	Selects an embedding deployment. Defaults to textembedding3small.
 .PARAMETER SessionOnly
 	Sets variables only in the current PowerShell process.
 .EXAMPLE
@@ -44,7 +44,7 @@ param(
 
 	[Parameter(Mandatory = $false)]
 	[ValidateNotNullOrEmpty()]
-	[string]$EmbeddingDeploymentName = 'text-embedding-3-small',
+	[string]$EmbeddingDeploymentName = 'textembedding3small',
 
 	[Parameter(Mandatory = $false)]
 	[switch]$SessionOnly
