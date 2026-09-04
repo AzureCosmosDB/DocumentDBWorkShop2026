@@ -203,8 +203,11 @@ if ($MyInvocation.InvocationName -ne '.') {
 			-Name $EmbeddingDeploymentName `
 			-ResourceLabel 'Azure OpenAI embedding deployment'
 
+		$DocumentDbConnectionUri = "mongodb+srv://$($DocumentDb.Name).global.mongocluster.cosmos.azure.com/"
+
 		$Variables = [ordered]@{
 			DOCUMENTDB_CLUSTER_NAME          = $DocumentDb.Name
+			DOCUMENTDB_CONNECTION_URI        = $DocumentDbConnectionUri
 			AZURE_OPENAI_ENDPOINT             = $OpenAiEndpoint.TrimEnd('/')
 			AZURE_OPENAI_EMBEDDING_DEPLOYMENT = $EmbeddingDeployment.Name
 		}
