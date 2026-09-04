@@ -1,0 +1,7 @@
+ipykernel
+azure-cosmos
+azure-identity
+python-dotenv
+openai
+numpy
+pymongo
