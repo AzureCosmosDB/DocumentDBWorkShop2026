@@ -143,7 +143,8 @@ internal static class Program
                 embeddingDeployment,
                 question);
             var vectorContext = await chunks.Aggregate<BsonDocument>(
-            [
+            new BsonDocument[]
+            {
                 new BsonDocument("$search", new BsonDocument("cosmosSearch", new BsonDocument
                 {
                     { "path", "embedding" },
@@ -159,13 +160,14 @@ internal static class Program
                     { "url", 1 },
                     { "score", new BsonDocument("$meta", "searchScore") }
                 })
-            ]).ToListAsync();
+            }).ToListAsync();
 
             IReadOnlyList<BsonDocument> retrievedContext = vectorContext;
             if (fullTextSearchSupported)
             {
                 var keywordContext = await chunks.Aggregate<BsonDocument>(
-                [
+                new BsonDocument[]
+                {
                     new BsonDocument("$search", new BsonDocument
                     {
                         { "index", "idx_chunk_fts" },
@@ -185,7 +187,7 @@ internal static class Program
                         { "url", 1 },
                         { "score", new BsonDocument("$meta", "searchScore") }
                     })
-                ]).ToListAsync();
+                }).ToListAsync();
                 retrievedContext = FuseWithRrf([keywordContext, vectorContext]);
             }
 
@@ -271,7 +273,7 @@ internal static class Program
         {
             for (var rank = 0; rank < results.Count; rank++)
             {
-                var id = results[rank]["_id"].ToString();
+                var id = results[rank]["_id"].AsString;
                 documents[id] = results[rank];
                 scores[id] = scores.GetValueOrDefault(id) + 1.0 / (rankConstant + rank + 1);
             }

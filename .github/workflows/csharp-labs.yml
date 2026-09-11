@@ -1,0 +1,36 @@
+name: C# labs
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Data modeling and performance
+            project: 2-Data-Modeling-and-Performance/csharp/DocumentDbModeling.csproj
+          - name: Search
+            project: 4-Search/before/csharp/DocumentDbSearch.csproj
+          - name: RAG pipeline
+            project: 5-RAG-Pipeline/before/csharp/DocumentDbRag.csproj
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build
+        run: dotnet build "${{ matrix.project }}" --configuration Release --nologo --warnaserror
