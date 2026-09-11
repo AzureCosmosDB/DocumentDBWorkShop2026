@@ -78,15 +78,17 @@ The workshop environment includes:
 
 Complete these steps once before opening a module:
 
-1. Use the instructor-provided link to connect to the workshop VM in your web
-   browser.
-2. Open the preconfigured `docdbworkshop` workspace in VS Code on the VM.
-3. Open the Azure portal in the VM browser and sign in with the supplied
+1. Sign in to the [NoSQL Workshop Registrations portal](https://aka.ms/cdbhols)
+   as a registrant.
+2. Open your registered event, then select **VM Link** in **VM Details**. Sign
+   in to the workshop VM with the VM User Name and VM Password shown there.
+3. Open the preconfigured `docdbworkshop` workspace in VS Code on the VM.
+4. Open the Azure portal in the VM browser and sign in with the supplied
    Microsoft Entra user principal.
-4. Confirm that you can view the assigned Azure resource group and its
+5. Confirm that you can view the assigned Azure resource group and its
    predeployed resources.
-5. Open a PowerShell terminal at the repository root.
-6. Sign in to Azure CLI with the same supplied user principal and configure the
+6. Open a PowerShell terminal at the repository root.
+7. Sign in to Azure CLI with the same supplied user principal and configure the
    workshop environment.
 
 ```powershell
