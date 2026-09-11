@@ -45,10 +45,11 @@ internal static class Program
             Console.WriteLine($"Polymorphic documents: {await demo.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("orderId", "DEMO-002"))}");
 
             Console.WriteLine("\n3. Exploring status distribution");
-            var statusCounts = await orders.Aggregate<BsonDocument>([
+            var statusCounts = await orders.Aggregate<BsonDocument>(new BsonDocument[]
+            {
                 new BsonDocument("$group", new BsonDocument { { "_id", "$status" }, { "count", new BsonDocument("$sum", 1) } }),
                 new BsonDocument("$sort", new BsonDocument("count", -1))
-            ]).ToListAsync();
+            }).ToListAsync();
             statusCounts.ForEach(document => Console.WriteLine(document));
 
             Console.WriteLine("\n4. Comparing a baseline with an ESR index");
@@ -70,12 +71,13 @@ internal static class Program
             PrintExplain("ESR index", await ExplainFindAsync(database, customerFilter, new BsonDocument("createdAt", -1)));
 
             Console.WriteLine("\n6. Aggregating the shipped-order leaderboard");
-            var leaderboard = await orders.Aggregate<BsonDocument>([
+            var leaderboard = await orders.Aggregate<BsonDocument>(new BsonDocument[]
+            {
                 new BsonDocument("$match", new BsonDocument { { "status", "shipped" }, { "createdAt", new BsonDocument("$gte", new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)) } }),
                 new BsonDocument("$group", new BsonDocument { { "_id", "$customerId" }, { "totalRevenue", new BsonDocument("$sum", "$total") }, { "orderCount", new BsonDocument("$sum", 1) } }),
                 new BsonDocument("$sort", new BsonDocument("totalRevenue", -1)),
                 new BsonDocument("$limit", 5)
-            ]).ToListAsync();
+            }).ToListAsync();
             leaderboard.ForEach(document => Console.WriteLine(document));
             Console.WriteLine("Success: compare the two explain tables and discuss which work each index removes.");
             return 0;

@@ -314,7 +314,7 @@ internal static class Program
         {
             for (var rank = 0; rank < results.Count; rank++)
             {
-                var id = results[rank]["_id"].ToString();
+                var id = results[rank]["_id"].AsString;
                 titles[id] = results[rank]["title"].AsString;
                 scores[id] = scores.GetValueOrDefault(id) + 1.0 / (rankConstant + rank + 1);
             }
