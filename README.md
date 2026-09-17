@@ -257,6 +257,243 @@ This error does not mean that Azure login, Microsoft Entra authentication, or
 vector search failed. The Python, C#, and Node.js labs continue with vector-only
 retrieval where full-text search is unavailable.
 
+## Proctor troubleshooting guide
+
+Use this section while helping participants during the workshop. Confirm the
+participant's name or assigned number, locate their assigned environment, and
+ask for the exact error before changing credentials or resources.
+
+> [!IMPORTANT]
+> Share only the affected participant's credentials and use the approved secure
+> channel. Never share the complete Credentials workbook, another participant's
+> row, passwords, tokens, connection strings, or full VM links in a group chat.
+
+### Participant cannot find the registration email
+
+1. Ask the participant to sign in to the
+   [NoSQL Workshop Registrations portal](https://aka.ms/cdbhols) and check the
+   registered event's **VM Details**.
+2. If the registration details are unavailable, verify the participant's
+   identity using the event's approved process.
+3. Open the approved Credentials workbook and locate the participant.
+4. Share only that participant's VM link, VM user name, VM password, Microsoft
+   Entra user principal, and user principal password.
+5. Use the approved secure channel and ask the participant to confirm receipt
+   without repeating the password.
+
+If there is no matching row, raise the issue in the proctor group. Do not assign
+another participant's environment.
+
+### Participant cannot sign in to the VM
+
+1. Confirm that the participant is using the **VM User Name** and **VM
+   Password** from the registration portal or Credentials workbook.
+2. Confirm that they are not using the Microsoft Entra user principal password
+   in place of the VM administrator password.
+3. Check for leading or trailing spaces, Caps Lock, and an unexpected keyboard
+   layout.
+4. Confirm that the credentials belong to the same VM link.
+
+If sign-in still fails, open the participant's resource group and select the VM.
+Search for **Reset password** in the VM menu, select **Reset password**, and
+paste the same assigned VM user name and VM password from the Credentials
+workbook. Do not invent a new password or reset a different account. Escalate if
+the reset fails.
+
+### Participant cannot open the Bastion link
+
+1. Ask the participant to copy the complete link into a private browser window.
+2. If it is invalid or expired, open the participant's resource group.
+3. Open the Azure Bastion resource.
+4. Enter `shareable` in the resource menu search box.
+5. Open **Shareable links**, locate the participant's VM, and regenerate its
+   link.
+6. Send the complete link only to that participant through the approved secure
+   channel.
+
+If the shareable link cannot be generated, capture the portal error and raise
+the issue in the proctor group.
+
+### Bastion opens but cannot connect
+
+1. Open the participant's resource group and select the assigned VM.
+2. Check the VM status on the Overview page.
+3. If the VM is stopped or deallocated, select **Start**.
+4. Wait until the status is **Running**, then wait another minute before
+   retrying.
+5. If the VM is already running, retry the Bastion link in a private browser
+   window.
+6. Capture and escalate the Bastion error if the connection still fails.
+
+Do not redeploy, resize, delete, or recreate a VM during the workshop unless
+the environment administrator directs you to do so.
+
+### Bastion session is blank, frozen, or disconnected
+
+1. Ask the participant to close duplicate Bastion tabs.
+2. Wait one minute and reconnect with the same link.
+3. Retry in a private browser window.
+4. Confirm that the VM remains **Running**.
+5. Escalate immediately if multiple participants are affected.
+
+### Participant cannot run `az login`
+
+1. Ask the participant to open the integrated terminal in VS Code.
+2. Confirm that the terminal profile is PowerShell.
+3. Run:
+
+```powershell
+az login --use-device-code
+```
+
+4. Open <https://microsoft.com/devicelogin>, enter the displayed code, and sign
+   in with the supplied Microsoft Entra user principal and password.
+5. Verify the signed-in account and subscription:
+
+```powershell
+az account show --query "{subscription:name,user:user.name}" --output table
+```
+
+If `az` is not recognized after VS Code is restarted, report the VM name in the
+proctor group because VM initialization may be incomplete.
+
+### Azure CLI uses the wrong account or subscription
+
+Run:
+
+```powershell
+az logout
+az account clear
+az login --use-device-code
+az account show --output table
+```
+
+Ask the participant to select the supplied workshop account. If the workshop
+subscription is visible but is not active, select it:
+
+```powershell
+az account set --subscription "<workshop-subscription-name-or-id>"
+```
+
+Escalate if the expected account or subscription is unavailable.
+
+### Participant cannot run `.\setupENV`
+
+The command for this workshop is
+`.\1-DocumentDB-Introduction-and-Cluster-Setup\Set-LabEnvironment.ps1`.
+
+1. Open a PowerShell terminal in VS Code at the repository root.
+2. Run:
+
+```powershell
+az login --use-device-code
+.\1-DocumentDB-Introduction-and-Cluster-Setup\Set-LabEnvironment.ps1
+```
+
+3. If the script cannot locate the expected resources, verify the account and
+   active subscription.
+4. If the resource group is known, retry with:
+
+```powershell
+.\1-DocumentDB-Introduction-and-Cluster-Setup\Set-LabEnvironment.ps1 `
+    -ResourceGroupName "<workshop-resource-group>"
+```
+
+5. Capture the complete error and raise it in the proctor group if the command
+   still fails.
+
+Do not change PowerShell execution policy or modify the script during the
+workshop without approval.
+
+### Environment variables are blank
+
+1. Run `Set-LabEnvironment.ps1` from the repository root.
+2. Close all VS Code terminals and restart any notebook kernel.
+3. Open a new PowerShell terminal.
+4. Check:
+
+```powershell
+$env:DOCUMENTDB_CLUSTER_NAME
+$env:AZURE_OPENAI_ENDPOINT
+$env:AZURE_OPENAI_EMBEDDING_DEPLOYMENT
+```
+
+If a value remains blank, rerun the setup script and escalate with its complete
+output.
+
+### Participant cannot see data in Azure Data Explorer
+
+1. Confirm that the participant opened the Azure DocumentDB cluster in their
+   assigned resource group.
+2. Confirm that Azure CLI is signed in with the supplied workshop identity.
+3. Open VS Code and install or enable the official **DocumentDB for VS Code**
+   extension.
+4. Sign in to the extension with the workshop identity.
+5. Connect to the assigned cluster and expand the expected database and
+   collection.
+6. Retry the query from VS Code.
+
+If neither Azure Data Explorer nor the VS Code extension can access the data,
+capture the exact authorization or connection error and escalate.
+
+### DocumentDB or Azure OpenAI returns `401`
+
+1. Run `az login --use-device-code`.
+2. Confirm that `az account show` displays the workshop account.
+3. Restart VS Code, the terminal, and the notebook kernel or application.
+4. Retry once, then escalate if the refreshed login still returns 401.
+
+### DocumentDB or Azure OpenAI returns `403`
+
+1. Confirm that the participant is using their assigned resource group.
+2. Confirm that the supplied workshop identity is active in Azure CLI.
+3. Wait two to three minutes in case a role assignment is still propagating.
+4. Restart the notebook kernel or application and retry.
+5. Escalate with the resource name and complete error so the environment
+   administrator can verify the data-plane role assignment.
+
+### A service returns `429`
+
+1. Stop repeatedly running the same cell or command.
+2. Close duplicate notebooks or applications.
+3. Wait 30 to 60 seconds and retry once.
+4. Notify the proctor group if multiple participants are affected so the
+   instructor can reduce concurrency or review capacity.
+
+### Python notebook has no kernel or package
+
+1. Confirm that the participant opened the provided workshop workspace.
+2. Use **Select Kernel** and choose the preconfigured workshop interpreter.
+3. Restart the kernel and run cells from the beginning.
+4. Do not install packages unless the lab instructions explicitly require it.
+5. Escalate with the VM name if no Python interpreter is available.
+
+### C# or Node.js lab does not run
+
+1. Confirm that the participant opened the correct module and language folder.
+2. For C#, run `dotnet --list-sdks` and confirm that .NET 10 is available.
+3. For Node.js, run `node --version` and `npm --version`.
+4. Capture the first error rather than only the final stack trace.
+5. Escalate if the required runtime or preinstalled package is missing.
+
+### Proctor escalation checklist
+
+Include:
+
+* Participant number or approved identifier
+* Resource group and VM name
+* Module and step
+* Exact error or a screenshot with credentials and tokens redacted
+* VM power state
+* Signed-in account and subscription, with sensitive fields omitted
+* Troubleshooting already attempted
+* Whether one or multiple participants are affected
+
+Escalate immediately when a credential row is missing, credentials remain
+invalid, VM initialization is incomplete, multiple participants report the
+same service failure, or resolving the issue would require deleting or
+redeploying a resource.
+
 ## When you get stuck
 
 ### Azure sign-in fails
