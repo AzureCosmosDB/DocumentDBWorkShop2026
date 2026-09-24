@@ -87,10 +87,10 @@ Complete these steps once before opening a module:
    Microsoft Entra user principal.
 5. Confirm that you can view the assigned Azure resource group and its
    predeployed resources.
-6. Open a PowerShell terminal at the repository root.
+6. Open a Terminal window (Windows Button then search for terminal) then navigate to cloned repository root (it will be under Documents folder of the loggedin user.
 7. Sign in to Azure CLI with the same supplied user principal and configure the
-   workshop environment.
-
+   workshop environment execute the below command to do this: .
+ 
 ```powershell
 az login
 ./1-DocumentDB-Introduction-and-Cluster-Setup/Set-LabEnvironment.ps1
@@ -112,6 +112,14 @@ AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-3-small
 
 These values are resource identifiers, not passwords or API keys.
 
+## VS Code
+
+1. Open the Visual Studio Code (VSCode), No need to signin just skip the signin if asked first time.
+
+2. Open the Repo folder (this repo is cloned under Documents folder of the loggedin user)
+3. Click on Terminal --> New Terminal (if system ask for Trust the folder then click on trust)
+
+4. Now you can follow all the commands as required. 
 ## Choose a language track
 
 Modules 2, 4, and 5 provide Python, C#, and Node.js implementations. Choose one
